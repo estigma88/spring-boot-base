@@ -1,11 +1,13 @@
 package com.coderstower.springboot.base.springbootbase;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
@@ -13,10 +15,18 @@ import org.springframework.test.context.ActiveProfiles;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@WireMockTest(httpPort = 9090)
 @ActiveProfiles(profiles = { "test" })
 class SpringBootBaseApplicationTests {
+
+	@RegisterExtension
+	static WireMockExtension wm1 = WireMockExtension.newInstance()
+			.options(wireMockConfig().port(9090))
+			.configureStaticDsl(true)
+			.failOnUnmatchedRequests(true)
+			.build();
 
 	@LocalServerPort
 	private Integer port;
