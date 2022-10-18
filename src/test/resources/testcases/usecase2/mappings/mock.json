@@ -5,7 +5,9 @@
   },
   "response": {
     "status": 200,
-    "body": "Hello mars!",
+    "jsonBody":  {
+      "message": "Hello mars!"
+    },
     "headers": {
       "Content-Type": "text/plain"
     }

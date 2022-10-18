@@ -1,13 +1,16 @@
 package com.coderstower.springboot.base.springbootbase;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import io.restassured.RestAssured;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -16,6 +19,8 @@ import java.nio.file.Path;
 class SpringBootBaseApplicationTests {
     @LocalServerPort
     private Integer port;
+
+    private final Path parentPath = Path.of("src/test/resources/");
 
     @Test
     void helloWorld(WireMockRuntimeInfo wireMockRuntimeInfo) {
@@ -32,7 +37,7 @@ class SpringBootBaseApplicationTests {
                 .extract()
                 .asString();
 
-        response.toString();
+        assertEquals("testcases/usecase1/response.json", response);
     }
 
     @Test
@@ -50,13 +55,27 @@ class SpringBootBaseApplicationTests {
                 .extract()
                 .asString();
 
-        response.toString();
+        assertEquals("testcases/usecase2/response.json", response);
     }
 
-    private static void setStubs(String path, WireMockRuntimeInfo wireMockRuntimeInfo) {
+    private void setStubs(String path, WireMockRuntimeInfo wireMockRuntimeInfo) {
         wireMockRuntimeInfo.getWireMock()
                 .loadMappingsFrom(
-                        Path.of("src/test/resources/" + path).toFile());
+                        parentPath.resolve(path).toFile());
     }
 
+    private void assertEquals(String expectedResponsePath, String response) {
+        try {
+            var mapper = new ObjectMapper();
+            var expectedTree = mapper.readTree(Files.readString(parentPath.resolve(expectedResponsePath)));
+            var expectedJSONPretty = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(expectedTree);
+
+            var currentTree = mapper.readTree(response);
+            var currentJSONPretty = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(currentTree);
+
+            Assertions.assertEquals(expectedJSONPretty, currentJSONPretty);
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
 }
