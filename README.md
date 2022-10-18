@@ -15,6 +15,7 @@ We set up an end-to-end testing using:
 The following is what happens:
 - Spring boot starts the project in a random port
 - A WireMock server is started
+- A Postgres database is started using tests containers
 - By each test:
   - JSON mocks are injected in the WireMock server before each test run
   - A RESTFul call is made using RestAssured to the Spring Boot controller
