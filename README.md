@@ -1,11 +1,11 @@
 # Spring Boot Java Base Project
 This project is a base project with the following utilities:
-- RESTful controller
+- RESTFul controller
 - Spring JPA with Postgres
 - WebClient as HTTP client
 
 # Testing end to end
-We setup an end to end testing using:
+We set up an end-to-end testing using:
 - SpringBootTests framework with a random port
 - WireMock server as HTTP mock server
 - RestAssured as HTTP client and assertion
@@ -20,6 +20,6 @@ The following is what happens:
   - A RESTFul call is made using RestAssured to the Spring Boot controller
   - An assert is performed against the status response code
   - The JSON response is extracted
-  - The JSON response is normalized, along side with its expected response
+  - The JSON response is normalized, alongside with its expected response
   - The actual and expected JSON are compared
   - JSON mocks are reset
