@@ -15,67 +15,52 @@ import java.nio.file.Path;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @WireMockTest(httpPort = 9090)
-@ActiveProfiles(profiles = {"test"})
+@ActiveProfiles(profiles = { "test" })
 class SpringBootBaseApplicationTests {
-    @LocalServerPort
-    private Integer port;
 
-    private final Path parentPath = Path.of("src/test/resources/");
+	@LocalServerPort
+	private Integer port;
 
-    @Test
-    void helloWorld(WireMockRuntimeInfo wireMockRuntimeInfo) {
-        setStubs("testcases/usecase1", wireMockRuntimeInfo);
+	private final Path parentPath = Path.of("src/test/resources/");
 
-        var response = RestAssured
-                .given()
-                .port(port)
-                .when()
-                .get("/helloWorld")
-                .then()
-                .assertThat()
-                .statusCode(200)
-                .extract()
-                .asString();
+	@Test
+	void helloWorld(WireMockRuntimeInfo wireMockRuntimeInfo) {
+		setStubs("testcases/usecase1", wireMockRuntimeInfo);
 
-        assertEquals("testcases/usecase1/response.json", response);
-    }
+		var response = RestAssured.given().port(port).when().get("/helloWorld").then().assertThat().statusCode(200)
+				.extract().asString();
 
-    @Test
-    void helloMars(WireMockRuntimeInfo wireMockRuntimeInfo) {
-        setStubs("testcases/usecase2", wireMockRuntimeInfo);
+		assertEquals("testcases/usecase1/response.json", response);
+	}
 
-        var response = RestAssured
-                .given()
-                .port(port)
-                .when()
-                .get("/helloWorld")
-                .then()
-                .assertThat()
-                .statusCode(200)
-                .extract()
-                .asString();
+	@Test
+	void helloMars(WireMockRuntimeInfo wireMockRuntimeInfo) {
+		setStubs("testcases/usecase2", wireMockRuntimeInfo);
 
-        assertEquals("testcases/usecase2/response.json", response);
-    }
+		var response = RestAssured.given().port(port).when().get("/helloWorld").then().assertThat().statusCode(200)
+				.extract().asString();
 
-    private void setStubs(String path, WireMockRuntimeInfo wireMockRuntimeInfo) {
-        wireMockRuntimeInfo.getWireMock()
-                .loadMappingsFrom(
-                        parentPath.resolve(path).toFile());
-    }
+		assertEquals("testcases/usecase2/response.json", response);
+	}
 
-    private void assertEquals(String expectedResponsePath, String response) {
-        try {
-            var mapper = new ObjectMapper();
-            var expectedTree = mapper.readTree(Files.readString(parentPath.resolve(expectedResponsePath)));
-            var expectedJSONPretty = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(expectedTree);
+	private void setStubs(String path, WireMockRuntimeInfo wireMockRuntimeInfo) {
+		wireMockRuntimeInfo.getWireMock().loadMappingsFrom(parentPath.resolve(path).toFile());
+	}
 
-            var currentTree = mapper.readTree(response);
-            var currentJSONPretty = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(currentTree);
+	private void assertEquals(String expectedResponsePath, String response) {
+		try {
+			var mapper = new ObjectMapper();
+			var expectedTree = mapper.readTree(Files.readString(parentPath.resolve(expectedResponsePath)));
+			var expectedJSONPretty = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(expectedTree);
 
-            Assertions.assertEquals(expectedJSONPretty, currentJSONPretty);
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
-    }
+			var currentTree = mapper.readTree(response);
+			var currentJSONPretty = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(currentTree);
+
+			Assertions.assertEquals(expectedJSONPretty, currentJSONPretty);
+		}
+		catch (Exception e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
 }

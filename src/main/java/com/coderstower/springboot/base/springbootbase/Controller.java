@@ -6,13 +6,12 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @RestController
 public class Controller {
-    @GetMapping(path = "/helloWorld")
-    public String helloWorld() {
-        var webClient = WebClient.create("http://localhost:9090/some/thing");
 
-        return webClient.get()
-                .retrieve()
-                .bodyToMono(String.class)
-                .block();
-    }
+	@GetMapping(path = "/helloWorld")
+	public String helloWorld() {
+		var webClient = WebClient.create("http://localhost:9090/some/thing");
+
+		return webClient.get().retrieve().bodyToMono(String.class).block();
+	}
+
 }
